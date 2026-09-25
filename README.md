@@ -3,7 +3,7 @@ testing game rules via website on local network with simple 2D visuals
 
 link for Game State diagrams : https://app.vexlio.com/view/6N5fR3yuTRWgtGrP1JYY6g
 
-current screen shot's aren't final work.
+current screenshots aren't final work.
 
 it's currently on the Bones stage (function bare)
 --------
