@@ -15,4 +15,5 @@ Meat (function variation) ->
 Skin (function decoration) .
 
 <img width="1745" height="820" alt="Screenshot 2026-09-04 145652" src="https://github.com/user-attachments/assets/94c611eb-3ab7-44b1-8580-b7372760efc7" />
+<img width="1920" height="915" alt="Screenshot (90)" src="https://github.com/user-attachments/assets/48e2e8bd-7eac-4fe3-91d4-b29fa9e17d7f" />
 <img width="1715" height="619" alt="Screenshot 2026-09-04 145751" src="https://github.com/user-attachments/assets/2b6386eb-4274-4ce0-a4eb-c598aee5f729" />
