@@ -1,9 +1,14 @@
 // Map each menu action to its target page.
-// NOTE: "start"/"rules"/"cards"/"settings" are ARCHIVED — the game is
-// being remodeled around the Talking Game, so their buttons were
-// removed from mainpage.html for now. Their routes are left here on
-// purpose (harmless with no button pointing at them) so the old pages
-// are one line away from coming back later.
+// NOTE: "rules"/"cards"/"settings" are ARCHIVED — the game is being
+// remodeled around the Talking Game, so their buttons were removed
+// from mainpage.html for now. Their routes are left here on purpose
+// (harmless with no button pointing at them) so the old pages are one
+// line away from coming back later.
+//
+// "start" (the old card game) is removed FOR GOOD, not archived — its
+// button is gone and won't come back the same casual way the others
+// might. The route is left mapped here anyway since it's harmless and
+// the files themselves haven't been deleted.
 const PAGES = {
     start: "Start Game/Start Game.html",
     rules: "Game Rules/Game Rules.html",
@@ -27,22 +32,31 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Reset Game — clears the Talking Game's saved state so the
-    // monster forgets everything and starts as a stranger again. The
-    // storage key here MUST match Engine.js's STORAGE_KEY exactly —
-    // there's no shared import between the two files to keep them in
-    // sync automatically.
+    // Reset Game — clears every saved body-design drawing from a
+    // previous "Game Start" round, so the next round starts from a
+    // blank body. This prefix MUST match Body Data.js's own
+    // STORAGE_PREFIX exactly — there's no shared import between the
+    // two files (different pages) to keep them in sync automatically.
     const resetBtn = document.getElementById("reset-game-btn");
     if (resetBtn) {
         resetBtn.addEventListener("click", handleResetGame);
     }
 });
 
+const BODY_DRAWING_STORAGE_PREFIX = "bodyDrawing_";
+
 function handleResetGame() {
-    const confirmed = window.confirm("Reset the Talking Game? This clears everything the monster has learned so far.");
+    const confirmed = window.confirm("Reset Game Start? This clears every body part you've drawn so far.");
     if (!confirmed) return;
-    localStorage.removeItem("talkingGameEngineState");
-    window.alert("Talking Game has been reset.");
+
+    const keysToRemove = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key && key.indexOf(BODY_DRAWING_STORAGE_PREFIX) === 0) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((key) => window.localStorage.removeItem(key));
+
+    window.alert("Game Start has been reset.");
 }
 
 function handleMenuAction(action) {

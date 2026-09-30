@@ -1,0 +1,387 @@
+/* =============================================================
+   Stage 2 — Design Minigame styling
+   -------------------------------------------------------------
+   The "canvas" panel: opens in the middle of the screen with
+   200px of padding on each side, split into two inner panels:
+     LEFT  (30%) = body navigation: a T-pose overview (Head / Torso /
+            Arm x2 / Legs), or one part's own sub-panel once opened.
+     RIGHT (70%) = the drawing panel (paint-tool toolbar + guide-
+            overlaid canvas)
+   Controlled by "Design Minigame.js" (open/close, navigation,
+   Apply to Body / THIS IS ME), "Body Data.js" (part geometry +
+   saved-drawing storage), and "Paint Tool.js" (the actual drawing
+   on #drawing-canvas).
+   ============================================================= */
+
+.design-canvas {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 200px;
+    right: 200px;
+    display: flex;
+    background-color: #2a2a2a;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    z-index: 20;
+
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+/* The [hidden] attribute is how Design Minigame.js actually keeps
+   this panel out of the way (and un-clickable) before Stage 2 opens
+   and after it closes — this rule has to exist because our own
+   "display: flex" above would otherwise override the browser's
+   default [hidden] { display: none } rule (author CSS always beats
+   the user-agent stylesheet). Without it, the panel stayed invisible
+   but still fully laid out and on top of everything at z-index 20,
+   silently swallowing clicks meant for Stage 1's UI underneath it —
+   including the "I want to become new!" button. */
+.design-canvas[hidden] {
+    display: none;
+}
+
+.design-canvas.visible {
+    opacity: 1;
+}
+
+/* ---- LEFT inner panel (30%) — body navigation ---- */
+.body-nav-panel {
+    flex: 0 0 30%;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 20px;
+    background-color: #232323;
+    border-right: 2px solid #3a3a3a;
+}
+
+/* ---- T-pose overview: Head / Torso / Arm x2 / Legs ----
+   Exact pixel sizes (4x the original spec — doubled twice, per
+   request):
+     head            -> 80x80 square (the base unit — "one head block")
+     arm (each side)  -> 160x80 horizontal rectangle (2 head blocks wide)
+     torso            -> 80x160 vertical/"profile" rectangle (2 head blocks tall)
+     legs             -> 80x160 vertical/"profile" rectangle (2 head blocks tall)
+   A 3x3 CSS grid with named areas and fixed-size tracks (not 1fr) so
+   the 5 parts land in a body shape at exactly those sizes; the arm
+   row is 160px tall to match torso/legs, so .tpose-arm pins its own
+   80px height to the TOP of that row (shoulders, not mid-torso) —
+   see .tpose-arm's align-self below. 4px gaps everywhere, per the
+   design. The whole grid is a fixed size, so it's centered (not
+   stretched) within the surrounding nav panel via justify/align-content. */
+.tpose-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 160px 80px 160px;
+    grid-template-rows: 80px 160px 160px;
+    grid-template-areas:
+        ".         head       ."
+        "arm-left  torso      arm-right"
+        ".         legs       .";
+    gap: 4px;
+    justify-content: center;
+    align-content: center;
+}
+
+/* Design Minigame.js toggles the t-pose grid vs the sub-panel view
+   with the [hidden] attribute — this rule has to exist for the same
+   reason .design-canvas[hidden] does above: our own "display: grid"
+   would otherwise override the browser's default [hidden] rule, and
+   the "hidden" grid would stay laid out and clickable underneath
+   the sub-panel view. */
+.tpose-grid[hidden] {
+    display: none;
+}
+
+.tpose-part {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #333333;
+    border: 1px solid #4a4a4a;
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+/* Head/torso/legs each fill their own grid track exactly (80x80,
+   80x160, 80x160). The arm cells are only 80px tall but sit in a
+   160px row (to line up with torso/legs), so they need an explicit
+   height — pinned to the TOP of that row (shoulder height, lined up
+   with the head) rather than centered mid-row. */
+.tpose-arm {
+    height: 80px;
+    align-self: start;
+}
+
+.tpose-part:hover {
+    border-color: #7fb8c9;
+}
+
+/* Already has every region of this part saved */
+.tpose-part.done {
+    border-color: #6fcf6f;
+}
+
+/* Cells are too small (20-40px) to hold visible text — the part name
+   is still available as a hover tooltip (see the "title" attribute
+   Design Minigame.js sets), and screen readers get it from this
+   visually-hidden label. */
+.tpose-part-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+/* ---- Composited previews (t-pose cells AND the open sub-panel) ----
+   Body Data.js's renderComposite() fills these with one <img> per
+   drawn region, positioned/sized by that region's fractional box —
+   this is what actually "scales the drawing to fit the container". */
+.composite-preview {
+    position: absolute;
+    inset: 0;
+}
+
+.composite-part {
+    position: absolute;
+    /* left/top/width/height set inline per-region by Body Data.js */
+}
+
+/* ---- Sub-panel view: shown instead of the t-pose grid once a part
+   (Head / Torso / Arm / Legs) is opened ---- */
+.subpanel-view {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Same [hidden]-vs-"display" fix as .tpose-grid[hidden] above. */
+.subpanel-view[hidden] {
+    display: none;
+}
+
+.panel-back-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #dddddd;
+    background-color: #333333;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.panel-back-btn:hover {
+    border-color: #7fb8c9;
+}
+
+.subpanel-title {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #eeeeee;
+    margin-bottom: 12px;
+}
+
+.subpanel-preview {
+    position: relative;
+    flex: 1;
+    background-color: #333333;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.this-is-me-btn {
+    margin-top: auto;
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #c0392b;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 1s ease, background-color 0.2s ease, transform 0.1s ease;
+}
+
+.this-is-me-btn.visible {
+    opacity: 1;
+}
+
+.this-is-me-btn:hover {
+    background-color: #e74c3c;
+}
+
+.this-is-me-btn:active {
+    transform: scale(0.97);
+}
+
+/* ---- RIGHT inner panel (70%) — the drawing panel ---- */
+.drawing-panel {
+    flex: 0 0 70%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 14px;
+}
+
+.drawing-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 10px 14px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 18px;
+    border-right: 1px solid #444444;
+}
+
+.toolbar-group:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+/* Tool buttons: brush / bucket / eraser */
+.tool-btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #dddddd;
+    background-color: #333333;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tool-btn.active {
+    border-color: #7fb8c9;
+    color: #ffffff;
+    background-color: #2c3e50;
+}
+
+/* Colour swatches */
+.color-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #4a4a4a;
+    cursor: pointer;
+}
+
+.color-btn.active {
+    border-color: #ffffff;
+    transform: scale(1.15);
+}
+
+/* Brush size buttons: tiny / medium / big, shown as growing dots */
+.size-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #333333;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.size-btn.active {
+    border-color: #7fb8c9;
+    background-color: #2c3e50;
+}
+
+.size-dot {
+    display: block;
+    border-radius: 50%;
+    background-color: #dddddd;
+}
+
+.size-dot-tiny {
+    width: 4px;
+    height: 4px;
+}
+
+.size-dot-medium {
+    width: 10px;
+    height: 10px;
+}
+
+.size-dot-big {
+    width: 18px;
+    height: 18px;
+}
+
+/* The blank drawing surface: a positioning wrapper holding the guide
+   canvas (dashed reference boxes, underneath) and the drawing canvas
+   (the player's actual strokes, on top) stacked exactly on top of
+   each other. Paint Tool.js sizes both canvases' internal pixel
+   buffers to match on init. */
+.drawing-surface {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.guide-canvas,
+.drawing-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Guides are purely visual — never meant to catch the mouse. */
+.guide-canvas {
+    pointer-events: none;
+}
+
+/* No cursor rule on the drawing canvas itself on purpose — the paint
+   cursor is owned entirely by Mouse Guard.css/Mouse Guard.js
+   (body.cursor-mode-paint), so there's a single place that decides
+   what "paint mode" looks like instead of two sources of truth. */
+
+.apply-to-body-btn {
+    align-self: center;
+    padding: 12px 26px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #2c3e50;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.apply-to-body-btn:hover {
+    background-color: #34495e;
+}
+
+.apply-to-body-btn:active {
+    transform: scale(0.97);
+}

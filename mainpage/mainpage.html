@@ -10,20 +10,22 @@
     <main class="container">
         <h1 id="greeting">Hello</h1>
 
-        <!-- GAME REMODEL: Talking Game is the main focus now, but the
-             old card game (Start Game) is being tested again here
-             alongside it — its route was already sitting untouched in
-             mainpage.js's PAGES map. Game Rules / Card Info / Settings
-             stay archived for now; add their <button> lines back the
-             same way whenever they're needed too. -->
+        <!-- GAME REMODEL: the old card game (Start Game) button is
+             removed for good — not archived, just gone from this menu.
+             Its files/route are untouched elsewhere (see mainpage.js)
+             in case they're ever wanted again, but this page no longer
+             links to it. Game Rules / Card Info / Settings stay
+             archived for now the same way; add their <button> lines
+             back whenever they're needed too. -->
         <nav class="menu">
-            <button class="menu-btn" data-action="talking">Talking Game</button>
-            <button class="menu-btn" data-action="start">Start Game</button>
-            <!-- Clears the Talking Game's saved localStorage state
-                 (Engine.js's "talkingGameEngineState" key) so the
-                 monster forgets everything and starts as a stranger
-                 again. Handled separately from the menu-btn buttons
-                 above since it doesn't navigate anywhere. -->
+            <button class="menu-btn" data-action="talking">Game Start</button>
+            <!-- Clears every saved body-design drawing from a
+                 previous "Game Start" round (the localStorage keys
+                 Body Data.js in Talking Game/ saves under — see
+                 mainpage.js's STORAGE_PREFIX comment for why the
+                 prefix has to be kept in sync by hand). Handled
+                 separately from the menu-btn buttons above since it
+                 doesn't navigate anywhere. -->
             <button id="reset-game-btn" class="menu-btn menu-btn-reset">Reset Game</button>
         </nav>
     </main>

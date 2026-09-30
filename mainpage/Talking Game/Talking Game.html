@@ -4,63 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Talking Game</title>
-    <link rel="stylesheet" href="Talking Game.css">
+
+    <!-- Each stylesheet only styles the stage named in its filename,
+         so any one stage can be redesigned or deleted without
+         touching the others. Base.css is the only shared one (page
+         background, the monster picture, the back-link). -->
+    <link rel="stylesheet" href="Base.css">
+    <link rel="stylesheet" href="Mouse Guard.css">
+    <link rel="stylesheet" href="Intro Sequence.css">
+    <link rel="stylesheet" href="Design Minigame.css">
 </head>
 <body>
     <a href="../mainpage.html" class="back-link">&larr; Main Menu</a>
 
     <div class="talking-page">
-        <!-- LEFT SIDE: a big monster picture, close up -->
-        <div class="monster-side">
+
+        <!-- The monster picture. It lives in the middle for the intro
+             (Stage 1), then Design Minigame.js slides it to the left
+             once the design minigame (Stage 2) opens, by toggling the
+             "monster-left" class below — see that file's
+             setMonsterPosition(). -->
+        <div id="monster-wrap" class="monster-wrap">
             <img id="monster-image" class="monster-image" alt="A curious monster" src="">
         </div>
 
-        <!-- RIGHT SIDE: the monster's question, and a box to type an answer -->
-        <div class="chat-side">
-            <div class="chat-window">
-                <p class="question-label">The monster asks:</p>
-                <p id="question-text" class="question-text">...</p>
+        <!-- STAGE 1: Intro Sequence — plain fading welcome text, no
+             chat box. Built and controlled entirely by
+             "Intro Sequence.js". Starts empty; that script fills in
+             the text/button as it plays through its steps. -->
+        <div id="intro-layer" class="intro-layer">
+            <p id="intro-text" class="intro-text"></p>
+            <button id="intro-button" class="intro-button" type="button" hidden></button>
+        </div>
 
-                <label class="answer-label" for="answer-input">Your answer:</label>
-                <input
-                    id="answer-input"
-                    class="answer-input"
-                    type="text"
-                    placeholder="Type your answer and press Enter"
-                    autocomplete="off"
-                >
+        <!-- STAGE 2: Design Minigame — the body-drawing panel
+             ("canvas"). Hidden until Intro Sequence finishes. Built
+             and controlled by "Design Minigame.js", which reads part
+             geometry from "Body Data.js" and uses "Paint Tool.js" for
+             the actual brush/bucket/eraser drawing underneath the
+             hood. -->
+        <div id="design-canvas" class="design-canvas" hidden>
+
+            <!-- LEFT inner panel (30%): body navigation. Exactly one
+                 of the two views below is visible at a time — Design
+                 Minigame.js toggles which. -->
+            <div class="body-nav-panel">
+
+                <!-- T-POSE OVERVIEW (default view): Head / Torso /
+                     Left Arm / Right Arm / Legs laid out like a body,
+                     4px apart. Design Minigame.js builds the 5 cells
+                     here and wires their clicks; each shows a live
+                     composited thumbnail of whatever's been drawn so
+                     far, scaled to fit. -->
+                <div class="tpose-grid" id="tpose-grid"></div>
+
+                <!-- SUB-PANEL VIEW: shown instead of the t-pose grid
+                     once a part is opened. The back arrow returns to
+                     the t-pose. The preview below composites that
+                     part's saved regions live, same as a t-pose cell
+                     but bigger. -->
+                <div class="subpanel-view" id="subpanel-view" hidden>
+                    <button id="panel-back-btn" class="panel-back-btn" type="button" title="Back to body">&larr;</button>
+                    <p class="subpanel-title" id="subpanel-title"></p>
+                    <div class="subpanel-preview" id="subpanel-preview"></div>
+                </div>
+
+                <!-- Appears once every body part has a saved drawing.
+                     Fades in via Design Minigame.js. -->
+                <button id="this-is-me-btn" class="this-is-me-btn" type="button" hidden>THIS IS ME</button>
+            </div>
+
+            <!-- RIGHT inner panel (70%): the drawing panel itself —
+                 toolbar on top, guide-overlaid canvas below, "Apply to
+                 Body" underneath. The guide canvas shows light-grey
+                 dashed reference boxes for whichever part is open
+                 (from Body Data.js) — purely visual, never part of a
+                 saved drawing. Paint Tool.js draws on #drawing-canvas
+                 only; Design Minigame.js owns the toolbar buttons and
+                 the apply button. -->
+            <div class="drawing-panel">
+                <div class="drawing-toolbar" id="drawing-toolbar">
+                    <!-- Tool buttons -->
+                    <div class="toolbar-group" id="tool-buttons">
+                        <button class="tool-btn" data-tool="brush" type="button" title="Brush">Brush</button>
+                        <button class="tool-btn" data-tool="bucket" type="button" title="Bucket fill">Bucket</button>
+                        <button class="tool-btn" data-tool="eraser" type="button" title="Eraser">Eraser</button>
+                    </div>
+
+                    <!-- 6 main colours -->
+                    <div class="toolbar-group" id="color-buttons">
+                        <button class="color-btn" data-color="#1a1a1a" style="background:#1a1a1a" title="Black"></button>
+                        <button class="color-btn" data-color="#e53e3e" style="background:#e53e3e" title="Red"></button>
+                        <button class="color-btn" data-color="#dd8b1f" style="background:#dd8b1f" title="Orange"></button>
+                        <button class="color-btn" data-color="#2f9e44" style="background:#2f9e44" title="Green"></button>
+                        <button class="color-btn" data-color="#1971c2" style="background:#1971c2" title="Blue"></button>
+                        <button class="color-btn" data-color="#9c36b5" style="background:#9c36b5" title="Purple"></button>
+                    </div>
+
+                    <!-- 3 brush sizes, tiny to big -->
+                    <div class="toolbar-group" id="size-buttons">
+                        <button class="size-btn" data-size="tiny" type="button" title="Tiny brush"><span class="size-dot size-dot-tiny"></span></button>
+                        <button class="size-btn" data-size="medium" type="button" title="Medium brush"><span class="size-dot size-dot-medium"></span></button>
+                        <button class="size-btn" data-size="big" type="button" title="Big brush"><span class="size-dot size-dot-big"></span></button>
+                    </div>
+                </div>
+
+                <!-- Guide canvas sits underneath the drawing canvas —
+                     same size, same position, pointer-events disabled.
+                     See Paint Tool.js's setGuides()/drawGuides(). -->
+                <div class="drawing-surface" id="drawing-surface">
+                    <canvas id="guide-canvas" class="guide-canvas"></canvas>
+                    <canvas id="drawing-canvas" class="drawing-canvas"></canvas>
+                </div>
+
+                <!-- Only meaningful while a part's panel is open —
+                     Design Minigame.js shows/hides this alongside the
+                     t-pose grid / sub-panel view toggle. -->
+                <button id="apply-to-body-btn" class="apply-to-body-btn" type="button" hidden>Apply to Body</button>
             </div>
         </div>
+
     </div>
 
-    <!-- DEBUG PANEL: a plain, read-only look at the engine's state,
-         for authoring/testing. Safe to delete along with its CSS in
-         Talking Game.css if this ever needs to become player-facing
-         only — nothing else on the page depends on it. -->
-    <div id="debug-panel" class="debug-panel">
-        <p class="debug-title">Engine state (debug)</p>
-        <p><span class="debug-label">Turn:</span> <span id="debug-turn">0</span>
-           &nbsp;&nbsp;<span class="debug-label">Trust:</span> <span id="debug-trust">0</span>
-           &nbsp;&nbsp;<span class="debug-label">Mood:</span> <span id="debug-mood">0</span></p>
-        <p><span class="debug-label">Topics:</span> <span id="debug-topics">—</span></p>
-        <p><span class="debug-label">Facts:</span> <span id="debug-facts">—</span></p>
-        <p><span class="debug-label">Debts:</span> <span id="debug-debts">—</span></p>
-        <p><span class="debug-label">Learned words:</span> <span id="debug-learned">—</span></p>
-        <p><span class="debug-label">Voice stage:</span> <span id="debug-voice-stage">mira</span>
-           &nbsp;&nbsp;<span class="debug-label">Max tier:</span> <span id="debug-max-tier">0</span></p>
-    </div>
+    <!-- ARCHIVED — the monster dictionary / AI conversation brain.
+         Not needed for the design-minigame prototype, so it's fully
+         disconnected here (no <script> tags load it, so none of it
+         runs on this page). The files themselves are untouched and
+         still sit in this folder, same as how "Start Game" (the old
+         card game) stays archived rather than deleted — safe to wire
+         back in later by re-adding these tags in their original
+         order:
+           <script src="Lexicon.js"></script>
+           <script src="Word Correction.js"></script>
+           <script src="Monster Content.js"></script>
+           <script src="Engine.js"></script>
+         The old debug panel that displayed this engine's state was
+         removed along with it, since it had nothing left to show. -->
 
-    <!-- Load order: Lexicon.js MUST come before Monster Content.js —
-         unlike everything else here, Monster Content.js reads
-         window.Lexicon.FAMILIES immediately while it's loading, not
-         later at runtime, so it has to already exist. Word
-         Correction.js has to exist before Engine.js's render stage
-         might reach for it. Talking Game.js (the page controller)
-         always loads last. -->
-    <script src="Lexicon.js"></script>
-    <script src="Word Correction.js"></script>
-    <script src="Monster Content.js"></script>
-    <script src="Engine.js"></script>
+    <!-- Load order matters:
+           1. Mouse Guard.js   — cursor mode switcher (regular/paint),
+                                 no dependencies. Must exist before
+                                 Design Minigame.js reaches for it.
+           2. Body Data.js     — body-part geometry + saved-drawing
+                                 storage, no dependencies. Must exist
+                                 before Design Minigame.js reaches for it.
+           3. Paint Tool.js    — standalone drawing engine, no
+                                 dependencies. Must exist before
+                                 Design Minigame.js reaches for it.
+           4. Intro Sequence.js — Stage 1, no dependencies.
+           5. Design Minigame.js — Stage 2, depends on Mouse Guard.js,
+                                 Body Data.js, and Paint Tool.js.
+           6. Talking Game.js  — page controller, loads last. Wires
+                                 Stage 1's completion into starting
+                                 Stage 2, and owns the monster picture. -->
+    <script src="Mouse Guard.js"></script>
+    <script src="Body Data.js"></script>
+    <script src="Paint Tool.js"></script>
+    <script src="Intro Sequence.js"></script>
+    <script src="Design Minigame.js"></script>
     <script src="Talking Game.js"></script>
 </body>
 </html>

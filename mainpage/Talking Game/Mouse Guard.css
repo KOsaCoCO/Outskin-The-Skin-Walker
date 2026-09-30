@@ -1,0 +1,16 @@
+/* =============================================================
+   MOUSE GUARD — cursor styling
+   -------------------------------------------------------------
+   Two modes, toggled by "Mouse Guard.js" adding/removing the
+   "cursor-mode-paint" class on <body>:
+     regular (default) — normal browser cursor everywhere.
+     paint              — crosshair cursor, active only while the
+                           design-minigame canvas panel is open.
+   Buttons/links keep their own "cursor: pointer" rules regardless
+   of mode, since a direct rule on an element always wins over an
+   inherited one from <body>.
+   ============================================================= */
+
+body.cursor-mode-paint {
+    cursor: crosshair;
+}
