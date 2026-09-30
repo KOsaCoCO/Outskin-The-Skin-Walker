@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talking Game</title>
+    <title>Skin-Walker Game</title>
 
     <!-- Each stylesheet only styles the stage named in its filename,
          so any one stage can be redesigned or deleted without
@@ -130,14 +130,14 @@
          Not needed for the design-minigame prototype, so it's fully
          disconnected here (no <script> tags load it, so none of it
          runs on this page). The files themselves are untouched and
-         still sit in this folder, same as how "Start Game" (the old
-         card game) stays archived rather than deleted — safe to wire
-         back in later by re-adding these tags in their original
-         order:
-           <script src="Lexicon.js"></script>
-           <script src="Word Correction.js"></script>
-           <script src="Monster Content.js"></script>
-           <script src="Engine.js"></script>
+         now live in "Talking Game Archive" (a sibling folder, one
+         level up), same as how "Start Game" (the old card game)
+         stays archived rather than deleted — safe to wire back in
+         later by re-adding these tags in their original order:
+           <script src="../Talking Game Archive/Lexicon.js"></script>
+           <script src="../Talking Game Archive/Word Correction.js"></script>
+           <script src="../Talking Game Archive/Monster Content.js"></script>
+           <script src="../Talking Game Archive/Engine.js"></script>
          The old debug panel that displayed this engine's state was
          removed along with it, since it had nothing left to show. -->
 
@@ -154,7 +154,7 @@
            4. Intro Sequence.js — Stage 1, no dependencies.
            5. Design Minigame.js — Stage 2, depends on Mouse Guard.js,
                                  Body Data.js, and Paint Tool.js.
-           6. Talking Game.js  — page controller, loads last. Wires
+           6. Skin-Walker Game.js — page controller, loads last. Wires
                                  Stage 1's completion into starting
                                  Stage 2, and owns the monster picture. -->
     <script src="Mouse Guard.js"></script>
@@ -162,6 +162,6 @@
     <script src="Paint Tool.js"></script>
     <script src="Intro Sequence.js"></script>
     <script src="Design Minigame.js"></script>
-    <script src="Talking Game.js"></script>
+    <script src="Skin-Walker Game.js"></script>
 </body>
 </html>

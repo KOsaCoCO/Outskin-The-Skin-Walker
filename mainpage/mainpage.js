@@ -1,6 +1,6 @@
 // Map each menu action to its target page.
 // NOTE: "rules"/"cards"/"settings" are ARCHIVED — the game is being
-// remodeled around the Talking Game, so their buttons were removed
+// remodeled around the Skin-Walker Game, so their buttons were removed
 // from mainpage.html for now. Their routes are left here on purpose
 // (harmless with no button pointing at them) so the old pages are one
 // line away from coming back later.
@@ -14,7 +14,7 @@ const PAGES = {
     rules: "Game Rules/Game Rules.html",
     cards: "Card Info/Card Info.html",
     settings: "Settings/Settings.html",
-    talking: "Talking Game/Talking Game.html"
+    talking: "Skin-Walker Game/Skin-Walker Game.html"
 };
 
 document.addEventListener("DOMContentLoaded", () => {

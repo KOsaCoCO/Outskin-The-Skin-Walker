@@ -1,5 +1,5 @@
 // =============================================================
-// Talking Game — PAGE CONTROLLER
+// Skin-Walker Game — PAGE CONTROLLER
 // -------------------------------------------------------------
 // This file is deliberately thin. It does not know HOW the intro
 // text fades or HOW the drawing panel works — it just:
@@ -15,7 +15,7 @@
 
     // Reuses the monster pictures already made for the card game —
     // no new art needed. The "../" goes up one folder (out of
-    // "Talking Game") before going into "Start Game/images".
+    // "Skin-Walker Game") before going into "Start Game/images".
     const MONSTER_IMAGES = [
         "../Start Game/images/monster_1.png",
         "../Start Game/images/monster_2.png",

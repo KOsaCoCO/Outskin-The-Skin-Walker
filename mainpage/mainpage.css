@@ -6,8 +6,9 @@
 }
 
 /* Dark theme — ONLY for this main menu page. This file
-   (mainpage.css) is never loaded by Talking Game.html, which keeps
-   its own separate stylesheet (Talking Game.css), so none of this
+   (mainpage.css) is never loaded by Skin-Walker Game.html, which keeps
+   its own separate stylesheets (Base.css, Mouse Guard.css,
+   Intro Sequence.css, Design Minigame.css), so none of this
    theme carries over once the player clicks through. */
 body {
     font-family: Arial, Helvetica, sans-serif;

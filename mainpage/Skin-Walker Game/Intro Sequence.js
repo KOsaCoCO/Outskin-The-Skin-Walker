@@ -6,7 +6,7 @@
 //
 // Call window.IntroSequence.start(onComplete) once, after the
 // page has loaded. It plays through STEPS in order, then calls
-// onComplete() so Talking Game.js can move on to Stage 2.
+// onComplete() so Skin-Walker Game.js can move on to Stage 2.
 //
 // Two ways a step moves forward:
 //   - "text" steps auto-advance after their own delay, but the
