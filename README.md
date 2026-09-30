@@ -1,7 +1,10 @@
 # Outskin the Skin-walker
 testing game rules via website on local network with simple 2D visuals
 
-link for Game State diagrams : https://app.vexlio.com/view/6N5fR3yuTRWgtGrP1JYY6g
+Game document is titled 'GDD - OTSW.pdf'
+------
+
+link for Game State diagrams : https://app.vexlio.com/view/b0qL56xpRdSLST2IH10Leg
 
 current screenshots aren't final work.
 
