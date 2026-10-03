@@ -4,7 +4,7 @@ testing game rules via website on local network with simple 2D visuals
 Game document is titled 'GDD - OTSW.pdf'
 ------
 
-link for Game State diagrams : https://app.vexlio.com/view/b0qL56xpRdSLST2IH10Leg
+link for Game State diagrams : https://app.vexlio.com/view/R8A4hmMESZm9lmbU6zlowQ
 
 current screenshots aren't final work.
 
